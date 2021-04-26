@@ -1,0 +1,176 @@
+html {
+        font-size: 16pt;
+        font-family: arial unicode ms,lucida sans unicode,sans-serif;
+    }
+
+    #game {
+        font-size: 2rem;
+    }
+
+    #board {
+        width: 24rem;
+        height: 24rem;
+        border: .2rem solid black;
+        
+        position: relative;
+    }
+
+    #prison {
+        height: 3rem;
+        position: relative;
+        padding-left: .5rem;
+        overflow-x: auto;
+    }
+
+    #columns {
+        margin-left: .2rem;
+        font-size: 1rem;
+        
+    }
+
+    .column {
+        width: 3rem;
+        float: left;
+        text-align: center;
+        box-sizing: border-box;
+        
+    }
+
+    .field, .piece, .indicator {
+        text-align: center;
+        width: 3rem;
+        height: 3rem;
+        box-sizing: border-box;
+    }
+
+    .field {
+        float: left;
+    }
+
+    .field:hover {
+        border: .2rem solid black;
+    }
+
+    .valid:before {
+       content: "◯";
+       font-size: 2.25rem;
+    }
+
+    #board .indicator {
+        position: absolute;
+        pointer-events: none;
+    }
+
+    #board .piece {
+        position: absolute;
+        cursor: pointer;
+
+        transition: all .5s ease;
+        pointer-events: none;
+    }
+
+    #prison .piece {
+        float: left;
+        width: 2rem;
+    }
+
+
+    .a {
+        left: 0;
+        /*grid-column-start: 1;*/
+    }
+
+    .b {
+        left: 3rem;
+        
+        /*grid-column-start: 2;*/
+    }
+
+    .c {
+        left: 6rem;
+        /*grid-column-start: 2;*/
+    }
+
+    .d {
+        left: 9rem;
+        /*grid-column-start: 2;*/
+    }
+
+    .e {
+        left: 12rem;
+        /*grid-column-start: 2;*/
+    }
+
+    .f {
+        left: 15rem;
+        /*grid-column-start: 2;*/
+    }
+
+    .g {
+        left: 18rem;
+        /*grid-column-start: 2;*/
+    }
+
+    .h {
+        left: 21rem;
+        /*grid-column-start: 2;*/
+    }
+
+    ._8 {
+        top: 0;
+        /*grid-row-start: 1;*/
+    }
+  
+    ._7 {
+        top: 3rem;
+        /*grid-row-start: 1;*/
+    }
+
+    ._6 {
+        top: 6rem;
+        /*grid-row-start: 1;*/
+    }
+
+    ._5 {
+        top: 9rem;
+        /*grid-row-start: 1;*/
+    }
+
+    ._4 {
+        top: 12rem;
+        /*grid-row-start: 1;*/
+        
+    }
+  
+    ._3 {
+        top: 15rem;
+        /*grid-row-start: 1;*/
+    }
+
+    ._2 {
+        top: 18rem;
+        /*grid-row-start: 1;*/
+    }
+  
+    ._1 {
+        top: 21rem;
+        /*grid-row-start: 1;*/
+    }
+
+    .black {
+        background-image: linear-gradient(45deg, grey 16.67%, white 16.67%, white 50%, grey 50%, grey 66.67%, white 66.67%, white 100%);
+        background-size: 4.24px 4.24px;
+    }
+
+    .white {
+        color: white;
+    }
+
+    .dot {
+        height: .9rem;
+        width: .9rem;
+        /*background-color: white;*/
+        border-radius: 50%;
+        display: inline-block;
+        border: .125 solid black;
+    }
