@@ -24,6 +24,7 @@ function Field(column, row) {
 let columns = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ];
 
 // this is about fields not pieces
+// how to test?
 function relativeToAbsolute(relativeField, origin) {
     let targetColumnIndex = columns.indexOf(origin.column) + relativeField.column;
     let targetRowIndex = origin.row + relativeField.row;
@@ -32,79 +33,47 @@ function relativeToAbsolute(relativeField, origin) {
     return new Field(columns[ columns.indexOf(origin.column) + relativeField.column ], origin.row + relativeField.row);
 }
 
-function straightMovesRelative(distance = 8) {
+// how to test?
+function path(x, y, distance, game = null, origin = null) {
     let result = [];
 
-    // travel east
     for (let i = 0; i < distance ; i++) {
         // refactor into something path like
-        let target = new Field(i + 1, 0);
-        if (this.game && this.field && this.game.getPieceAt(relativeToAbsolute(target, this.field))) {
+        let step = new Field((i + 1) * x, (i + 1) * y);
+        if (game && origin && game.getPieceAt(relativeToAbsolute(step, origin))) {
             break;
         }
-        result.push(target);
+        result.push(step);
     }
 
-    // travel west
-    for (let i = 0; i < distance ; i++) {
-        //result.push(new Field((i + 1) * -1, 0));
-        // refactor into something path like so we can do collision detection later on
-        let target = new Field((i + 1) * -1, 0);
-        if (this.game && this.field && this.game.getPieceAt(relativeToAbsolute(target, this.field))) {
-            break;
-        }
-        result.push(target);
-    }
+    return result;
+}
 
-    // travel north
-    for (let i = 0; i < distance ; i++) {
-        //result.push(new Field(0, i + 1));
-        // refactor into something path like
-        let target = new Field(0, i + 1);
-        if (this.game && this.field && this.game.getPieceAt(relativeToAbsolute(target, this.field))) {
-            break;
-        }
-        result.push(target);
-    }
+// this is about fields not pieces
+function collision(game, target, source) {
+    return (game && field) ? game.getPieceAt(relativeToAbsolute(target, this.field)) : false;
+}
 
-    // travel south
-    for (let i = 0; i < distance ; i++) {
-        //result.push(new Field(0, (i + 1) * -1));
-        // refactor into something path like
-        let target = new Field(0, (i + 1) * -1);
-        if (this.game && this.field && this.game.getPieceAt(relativeToAbsolute(target, this.field))) {
-            break;
-        }
-        result.push(target);
-    }
-    
-    return result.sort(compareFields);
+function straightMovesRelative(distance = 8) {
+    let result = 
+        path(1, 0, distance, this.game, this.field)
+        .concat(path(-1, 0, distance, this.game, this.field))
+        .concat(path(0, 1, distance, this.game, this.field))
+        .concat(path(0, -1, distance, this.game, this.field))
+        .sort(compareFields);
+  
+    return result;
 }
 
 function diagonalMovesRelative(distance = 8) {
-    let result = [];
-
-    // travel NE
-    for (let i = 0; i < distance ; i++) {
-        result.push(new Field(i + 1, i + 1));
-    }
-
-    // travel SE
-    for (let i = 0; i < distance ; i++) {
-        result.push(new Field((i + 1) * -1, i + 1));
-    }
-
-    // travel NW
-    for (let i = 0; i < distance ; i++) {
-        result.push(new Field((i + 1) * -1, (i + 1) * -1));
-    }
-
-    // travel SW
-    for (let i = 0; i < distance ; i++) {
-        result.push(new Field(i + 1, (i + 1) * -1));
-    }
-
-    return result.sort(compareFields);;
+    let result = 
+        path(1, 1, distance, this.game, this.field)
+        .concat(path(-1, 1, distance, this.game, this.field))
+        .concat(path(1, -1, distance, this.game, this.field))
+        .concat(path(-1, -1, distance, this.game, this.field))
+        .sort(compareFields);
+  
+    return result;
 }
 
 function validMoves() {
@@ -131,9 +100,9 @@ function decorateAbstractPiece(piece, color, field, game) {
     piece.isValidMove = isValidMove;
 }
 
-function Pawn(color, field, firstMove) {
+function Pawn(color, field, game, firstMove) {
 
-    decorateAbstractPiece(this, color, field);
+    decorateAbstractPiece(this, color, field, game);
     
     this.firstMove = firstMove;
 
@@ -144,13 +113,7 @@ function Pawn(color, field, firstMove) {
     this.validMovesRelative = function() {
         let distance = !this.firstMove ? 1 : 2;
         let direction = this.color == WHITE ? 1 : -1;
-        let result = [];
-        
-        for (let i = 0; i < distance; i++) {
-            result.push(new Field(0, (i + 1) * direction));
-        }
-
-        return result.sort(compareFields);
+        return path(0, direction, distance, this.game, this.field);
     }
 }
 
@@ -164,8 +127,8 @@ function Rook(color, field, game) {
     this.validMovesRelative = straightMovesRelative;
 }
 
-function Knight(color, field) {
-    decorateAbstractPiece(this, color, field);
+function Knight(color, field, game) {
+    decorateAbstractPiece(this, color, field, game);
 
     this.getFace = function() {
         return (this.color == WHITE) ? '♘' : '♞';
@@ -185,8 +148,8 @@ function Knight(color, field) {
     }
 }
 
-function Bishop(color, field) {
-    decorateAbstractPiece(this, color, field);
+function Bishop(color, field, game) {
+    decorateAbstractPiece(this, color, field, game);
 
     this.getFace = function() {
         return (this.color == WHITE) ? '♗' : '♝';
@@ -195,8 +158,8 @@ function Bishop(color, field) {
     this.validMovesRelative = diagonalMovesRelative;
 }
 
-function Queen(color, field) {
-    decorateAbstractPiece(this, color, field);
+function Queen(color, field, game) {
+    decorateAbstractPiece(this, color, field, game);
     
     this.getFace = function() {
         return (this.color == WHITE) ? '♕' : '♛';
@@ -210,8 +173,8 @@ function Queen(color, field) {
     }
 }
 
-function King(color, field) {
-    decorateAbstractPiece(this, color, field);
+function King(color, field, game) {
+    decorateAbstractPiece(this, color, field, game);
 
     this.getFace = function() {
         return (this.color == WHITE) ? '♔' : '♚';
