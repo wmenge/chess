@@ -11,7 +11,7 @@ let ui = {
 
         if (ui.selectedPiece == null) {
             let piece = game.getPieceAt(field);
-            if (piece) {
+            if (piece && game.currentColor && piece.color == game.currentColor) {
                 ui.selectedPiece = piece;
                 board.showValidMoves(piece.validMoves());
             }

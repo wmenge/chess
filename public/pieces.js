@@ -34,13 +34,22 @@ function relativeToAbsolute(relativeField, origin) {
 }
 
 // how to test?
-function path(x, y, distance, game = null, origin = null) {
+// try to refactor out game?
+function path(x, y, distance, game = null, origin = null, color = null) {
     let result = [];
 
     for (let i = 0; i < distance ; i++) {
         // refactor into something path like
         let step = new Field((i + 1) * x, (i + 1) * y);
-        if (game && origin && game.getPieceAt(relativeToAbsolute(step, origin))) {
+
+        // refactor out
+        if (collision(game, step, origin)) {
+            let piece = collision(game, step, origin);
+
+            // if other piece is different color, then allow capturing
+            if (color && piece.color != color) {
+                result.push(step);
+            }
             break;
         }
         result.push(step);
@@ -50,16 +59,16 @@ function path(x, y, distance, game = null, origin = null) {
 }
 
 // this is about fields not pieces
-function collision(game, target, source) {
-    return (game && field) ? game.getPieceAt(relativeToAbsolute(target, this.field)) : false;
+function collision(game, target, origin) {
+    return (game && origin) ? game.getPieceAt(relativeToAbsolute(target, origin)) : false;
 }
 
 function straightMovesRelative(distance = 8) {
     let result = 
-        path(1, 0, distance, this.game, this.field)
-        .concat(path(-1, 0, distance, this.game, this.field))
-        .concat(path(0, 1, distance, this.game, this.field))
-        .concat(path(0, -1, distance, this.game, this.field))
+        path(1, 0, distance, this.game, this.field, this.color)
+        .concat(path(-1, 0, distance, this.game, this.field, this.color))
+        .concat(path(0, 1, distance, this.game, this.field, this.color))
+        .concat(path(0, -1, distance, this.game, this.field, this.color))
         .sort(compareFields);
   
     return result;
@@ -67,10 +76,10 @@ function straightMovesRelative(distance = 8) {
 
 function diagonalMovesRelative(distance = 8) {
     let result = 
-        path(1, 1, distance, this.game, this.field)
-        .concat(path(-1, 1, distance, this.game, this.field))
-        .concat(path(1, -1, distance, this.game, this.field))
-        .concat(path(-1, -1, distance, this.game, this.field))
+        path(1, 1, distance, this.game, this.field, this.color)
+        .concat(path(-1, 1, distance, this.game, this.field, this.color, this.color))
+        .concat(path(1, -1, distance, this.game, this.field, this.color))
+        .concat(path(-1, -1, distance, this.game, this.field, this.color))
         .sort(compareFields);
   
     return result;
@@ -113,7 +122,25 @@ function Pawn(color, field, game, firstMove) {
     this.validMovesRelative = function() {
         let distance = !this.firstMove ? 1 : 2;
         let direction = this.color == WHITE ? 1 : -1;
-        return path(0, direction, distance, this.game, this.field);
+        let result = path(0, direction, distance, this.game, this.field);
+
+        // pawns capture diagonal
+        let pathLeft = new Field(-1, direction);
+        let pieceLeft = collision(this.game, pathLeft, this.field);
+
+        if (pieceLeft && pieceLeft.color !== this.color) {
+            result.push(pathLeft);
+        }
+
+        // pawns capture diagonal
+        let pathRight = new Field(1, direction);
+        let pieceRight = collision(this.game, pathRight, this.field);
+
+        if (pieceRight && pieceRight.color !== this.color) {
+            result.push(pathRight);
+        }
+
+        return result;
     }
 }
 
@@ -133,7 +160,7 @@ function Knight(color, field, game) {
     this.getFace = function() {
         return (this.color == WHITE) ? '♘' : '♞';
     }
-    
+
     this.validMovesRelative = function() {
         return [
             new Field(2, 1),
@@ -144,7 +171,13 @@ function Knight(color, field, game) {
             new Field(1, -2),
             new Field(-2, -1),
             new Field(-1, -2)
-        ].sort(compareFields);
+        ]
+        // do not allow jumps to fields w/ pieces of own color
+        .filter(s => {
+            let targetPiece = collision(this.game, s, this.field);
+            return !(targetPiece && targetPiece.color == this.color);
+        })
+        .sort(compareFields);
     }
 }
 

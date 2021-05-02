@@ -5,6 +5,9 @@ let game = {
 
     // maybe a map of field => piece?
     pieces: [],
+    capturedPieces: [],
+    // somehow make current color/having turns optional?
+    currentColor: null,
 
     et: new EventTarget(),
 
@@ -62,11 +65,17 @@ let game = {
 
     clear() {
         this.pieces = [];
+        this.capturedPieces = [];
         this.et.dispatchEvent(new Event("clear"));
     },
 
     move(piece, target) {
         let i = this.pieces.indexOf(piece);
+
+        // todo: validate capture
+        if (game.getPieceAt(target)) {
+            this.capture(target);
+        }
 
         // instead of mutating piece, create a new instance
         // unintented but nice side effect: pawn.firstmove gets set to false
@@ -74,6 +83,14 @@ let game = {
 
         // todo: validate!
         this.et.dispatchEvent(new CustomEvent("move", { detail: { piece: piece, target: target }}));
+
+    capture(field) {
+        let capturedPiece = game.getPieceAt(field);
+        //this.pieces.remove(capturedPiece);
+        this.pieces = this.pieces.filter(p => p !== capturedPiece);
+        this.capturedPieces.push(new capturedPiece.constructor(capturedPiece.color, field, this));
+
+        this.et.dispatchEvent(new CustomEvent("capture", { detail: { piece: capturedPiece, target: field }}));
     }
 }
 

@@ -17,6 +17,10 @@ game.et.addEventListener("move", (e) => {
     board.move(e.detail.piece.field, e.detail.target);
 });
 
+game.et.addEventListener("capture", (e) => {
+    board.capture(e.detail.target);
+});
+
 game.et.addEventListener("add-piece", (e) => {
     board.add(e.detail.getFace(), e.detail.field);
 });

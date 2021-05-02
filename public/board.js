@@ -50,7 +50,8 @@ var board = {
         }
     },
 
-    capture(pieceNode) {
+    capture(target) {
+        var pieceNode = board.getPieceNode(target);
         document.getElementById("prison").appendChild(pieceNode);
     },
 

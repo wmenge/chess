@@ -78,11 +78,11 @@ let pawnTests = {
         nanotest.assertEqualsArrays([new Field('d', 3)], pawn.validMoves());
     },
     testPawnWithDefinedInitialStateHasTwoMoves() {
-        let pawn = new Pawn(WHITE, null, true);
+        let pawn = new Pawn(WHITE, null, null, true);
         nanotest.assertEqualsArrays([new Field(0, 1), new Field(0, 2)], pawn.validMovesRelative());
     },
     testPawnWithDefinedNotInitialStateHasOneMove() {
-        let pawn = new Pawn(WHITE, null, false);
+        let pawn = new Pawn(WHITE, null, null, false);
         nanotest.assertEqualsArrays([new Field(0, 1)], pawn.validMovesRelative());
     },
     testIsValidMove() {
