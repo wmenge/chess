@@ -32,6 +32,11 @@ let ui = {
         Array.from(elements).forEach(function(element) {
           element.addEventListener('click', ui.onFieldClick);
         });
+    },
+
+    updateMetadata(game) {
+        //console.log(game.currentColor);
+        document.getElementById("metadata").innerHTML = game.currentColor;
     }
 }
 

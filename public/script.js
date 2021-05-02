@@ -13,8 +13,16 @@ game.et.addEventListener("clear", () => {
     board.clear();
 });
 
+game.et.addEventListener("setup", (e) => {
+    ui.updateMetadata(e.detail.game);
+});
+
 game.et.addEventListener("move", (e) => {
     board.move(e.detail.piece.field, e.detail.target);
+});
+
+game.et.addEventListener("move", (e) => {
+    ui.updateMetadata(e.detail.game);
 });
 
 game.et.addEventListener("capture", (e) => {
@@ -25,6 +33,7 @@ game.et.addEventListener("add-piece", (e) => {
     board.add(e.detail.getFace(), e.detail.field);
 });
 
+// put in own script
 let scoresheet = {
 
 	moves: [],
@@ -45,4 +54,3 @@ game.et.addEventListener("move", (e) => {
 
 ui.addEventHandlers();
 game.setup();
-//console.clear();
