@@ -131,6 +131,26 @@
 
 </body>
 
-<script type="module" src="/script.js"></script>
+<script type="module" src="/script.js">
+
+</script>
+
+<script type="module">
+  // import some stuff to run from console
+  import { game } from './game.js';
+  import { Field, Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
+
+  //console.log(game);
+  window.game = game;
+  window.Field = Field;
+  window.Pawn = Pawn;
+  window.Rook = Rook;
+  window.Knight = Knight;
+  window.Bishop = Bishop;
+  window.Queen = Queen;
+  window.King = King;
+  window.BLACK = BLACK;
+  window.WHITE = WHITE;
+</script>
 
 </html>
