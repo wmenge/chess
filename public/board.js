@@ -63,12 +63,12 @@ var board = {
         board.clearIndicators();
 
         moves.forEach(function(move) {
-            board.showIndicator("x", move);
+            board.showIndicator("", move);
         })
     },
 
     showIndicator(indicator, field) {
-        board.addElement(indicator, 'indicator', field);
+        board.addElement(indicator, 'indicator valid', field);
     },
 
     addElement(content, className, field) {

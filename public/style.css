@@ -54,6 +54,8 @@ html {
     .valid:before {
        content: "◯";
        font-size: 2.25rem;
+       font-weight: bold;
+       
     }
 
     #board .indicator {
@@ -164,13 +166,4 @@ html {
 
     .white {
         color: white;
-    }
-
-    .dot {
-        height: .9rem;
-        width: .9rem;
-        /*background-color: white;*/
-        border-radius: 50%;
-        display: inline-block;
-        border: .125 solid black;
     }
