@@ -15,6 +15,8 @@ let game = {
 
         this.clear();
 
+        this.currentColor =  WHITE;
+
         this.add(new Pawn(WHITE, new Field('a', 2), this, true));
         this.add(new Pawn(WHITE, new Field('b', 2), this, true));
         this.add(new Pawn(WHITE, new Field('c', 2), this, true));
@@ -50,6 +52,8 @@ let game = {
         this.add(new Bishop(BLACK, new Field('f', 8), this));
         this.add(new Knight(BLACK, new Field('g', 8), this));
         this.add(new Rook(BLACK, new Field('h', 8), this));
+
+        this.et.dispatchEvent(new CustomEvent("setup", { detail: { game: this }}));
     },
 
     add(piece) {
@@ -81,8 +85,13 @@ let game = {
         // unintented but nice side effect: pawn.firstmove gets set to false
         this.pieces[i] = new piece.constructor(piece.color, target, this);
 
+        if (this.currentColor) {
+            this.currentColor = this.currentColor == WHITE ? BLACK : WHITE;
+        }
+
         // todo: validate!
-        this.et.dispatchEvent(new CustomEvent("move", { detail: { piece: piece, target: target }}));
+        this.et.dispatchEvent(new CustomEvent("move", { detail: { piece: piece, target: target, game: this }}));
+    },
 
     capture(field) {
         let capturedPiece = game.getPieceAt(field);
