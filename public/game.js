@@ -1,10 +1,9 @@
-import { Field, Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
+import { fields, Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
 
 // do we ever need multiple games? how?
 let game = {
 
-    // maybe a map of field => piece?
-    pieces: [],
+    pieces: new Map(),
     capturedPieces: [],
     // somehow make current color/having turns optional?
     currentColor: null,
@@ -17,87 +16,92 @@ let game = {
 
         this.currentColor =  WHITE;
 
-        this.add(new Pawn(WHITE, new Field('a', 2), this, true));
-        this.add(new Pawn(WHITE, new Field('b', 2), this, true));
-        this.add(new Pawn(WHITE, new Field('c', 2), this, true));
-        this.add(new Pawn(WHITE, new Field('d', 2), this, true));
-        this.add(new Pawn(WHITE, new Field('e', 2), this, true));
-        this.add(new Pawn(WHITE, new Field('f', 2), this, true));
-        this.add(new Pawn(WHITE, new Field('g', 2), this, true));
-        this.add(new Pawn(WHITE, new Field('h', 2), this, true));
+        this.add(new Pawn(WHITE), fields.a2);
+        this.add(new Pawn(WHITE), fields.b2);
+        this.add(new Pawn(WHITE), fields.c2);
+        this.add(new Pawn(WHITE), fields.d2);
+        this.add(new Pawn(WHITE), fields.e2);
+        this.add(new Pawn(WHITE), fields.f2);
+        this.add(new Pawn(WHITE), fields.g2);
+        this.add(new Pawn(WHITE), fields.h2);
 
-        this.add(new Rook(WHITE, new Field('a', 1), this));
-        this.add(new Knight(WHITE, new Field('b', 1), this));
-        this.add(new Bishop(WHITE, new Field('c', 1), this));
-        this.add(new Queen(WHITE, new Field('d', 1), this));
-        this.add(new King(WHITE, new Field('e', 1), this));
-        this.add(new Bishop(WHITE, new Field('f', 1), this));
-        this.add(new Knight(WHITE, new Field('g', 1), this));
-        this.add(new Rook(WHITE, new Field('h', 1), this));
+        this.add(new Rook(WHITE), fields.a1);
+        this.add(new Knight(WHITE), fields.b1);
+        this.add(new Bishop(WHITE), fields.c1);
+        this.add(new Queen(WHITE), fields.d1);
+        this.add(new King(WHITE), fields.e1);
+        this.add(new Bishop(WHITE), fields.f1);
+        this.add(new Knight(WHITE), fields.g1);
+        this.add(new Rook(WHITE), fields.h1);
 
-        this.add(new Pawn(BLACK, new Field('a', 7), this, true));
-        this.add(new Pawn(BLACK, new Field('b', 7), this, true));
-        this.add(new Pawn(BLACK, new Field('c', 7), this, true));
-        this.add(new Pawn(BLACK, new Field('d', 7), this, true));
-        this.add(new Pawn(BLACK, new Field('e', 7), this, true));
-        this.add(new Pawn(BLACK, new Field('f', 7), this, true));
-        this.add(new Pawn(BLACK, new Field('g', 7), this, true));
-        this.add(new Pawn(BLACK, new Field('h', 7), this, true));
+        this.add(new Pawn(BLACK), fields.a7);
+        this.add(new Pawn(BLACK), fields.b7);
+        this.add(new Pawn(BLACK), fields.c7);
+        this.add(new Pawn(BLACK), fields.d7);
+        this.add(new Pawn(BLACK), fields.e7);
+        this.add(new Pawn(BLACK), fields.f7);
+        this.add(new Pawn(BLACK), fields.g7);
+        this.add(new Pawn(BLACK), fields.h7);
 
-        this.add(new Rook(BLACK, new Field('a', 8), this));
-        this.add(new Knight(BLACK, new Field('b', 8), this));
-        this.add(new Bishop(BLACK, new Field('c', 8), this));
-        this.add(new Queen(BLACK, new Field('d', 8), this));
-        this.add(new King(BLACK, new Field('e', 8), this));
-        this.add(new Bishop(BLACK, new Field('f', 8), this));
-        this.add(new Knight(BLACK, new Field('g', 8), this));
-        this.add(new Rook(BLACK, new Field('h', 8), this));
+        this.add(new Rook(BLACK), fields.a8);
+        this.add(new Knight(BLACK), fields.b8);
+        this.add(new Bishop(BLACK), fields.c8);
+        this.add(new Queen(BLACK), fields.d8);
+        this.add(new King(BLACK), fields.e8);
+        this.add(new Bishop(BLACK), fields.f8);
+        this.add(new Knight(BLACK), fields.g8);
+        this.add(new Rook(BLACK), fields.h8);
 
         this.et.dispatchEvent(new CustomEvent("setup", { detail: { game: this }}));
     },
 
-    add(piece) {
-        this.pieces.push(piece);
-        this.et.dispatchEvent(new CustomEvent("add-piece", { detail: piece }));
+    add(piece, field) {
+        this.pieces.set(field, piece);
+        this.et.dispatchEvent(new CustomEvent("add-piece", { detail: { piece: piece, field: field }}));
     },
 
     getPieceAt(field) {
         // Temp hack!
         if (!field) return null;
-        return this.pieces.find(p => field.equals(p.field));
+        return this.pieces.get(field);
+    },
+
+    getFieldOf(piece) {
+        if (!piece) return null;
+        let result = Array.from(this.pieces.entries()).find(e => piece === e[1]);
+        if (result) return result[0];
     },
 
     clear() {
-        this.pieces = [];
+        this.pieces = new Map();
         this.capturedPieces = [];
         this.et.dispatchEvent(new Event("clear"));
     },
 
     move(piece, target) {
-        let i = this.pieces.indexOf(piece);
+        let origin = this.getFieldOf(piece);
 
         // todo: validate capture
         if (game.getPieceAt(target)) {
             this.capture(target);
         }
 
-        // instead of mutating piece, create a new instance
-        // unintented but nice side effect: pawn.firstmove gets set to false
-        this.pieces[i] = new piece.constructor(piece.color, target, this);
+        this.pieces.delete(origin);
+        this.pieces.set(target, piece);
 
+        // move into switch color method. call method as reaction to move event
         if (this.currentColor) {
             this.currentColor = this.currentColor == WHITE ? BLACK : WHITE;
         }
 
         // todo: validate!
-        this.et.dispatchEvent(new CustomEvent("move", { detail: { piece: piece, target: target, game: this }}));
+        this.et.dispatchEvent(new CustomEvent("move", { detail: { origin: origin, piece: piece, target: target, game: this }}));
     },
 
     capture(field) {
         let capturedPiece = game.getPieceAt(field);
-        //this.pieces.remove(capturedPiece);
-        this.pieces = this.pieces.filter(p => p !== capturedPiece);
-        this.capturedPieces.push(new capturedPiece.constructor(capturedPiece.color, field, this));
+        this.capturedPieces.push(capturedPiece);
+        this.pieces.delete(field);
 
         this.et.dispatchEvent(new CustomEvent("capture", { detail: { piece: capturedPiece, target: field }}));
     }

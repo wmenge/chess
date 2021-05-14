@@ -1,6 +1,5 @@
 import nanotest from '/node_modules/@wmenge/nanotest/index.js';
 
-//import { Field, Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
 import { runTests } from '/pieces-tests.js';
 import { game } from '/game.js';
 import { board } from '/board.js';
@@ -18,7 +17,7 @@ game.et.addEventListener("setup", (e) => {
 });
 
 game.et.addEventListener("move", (e) => {
-    board.move(e.detail.piece.field, e.detail.target);
+    board.move(e.detail.origin, e.detail.target);
 });
 
 game.et.addEventListener("move", (e) => {
@@ -30,7 +29,7 @@ game.et.addEventListener("capture", (e) => {
 });
 
 game.et.addEventListener("add-piece", (e) => {
-    board.add(e.detail.getFace(), e.detail.field);
+    board.add(e.detail.piece.getFace(), e.detail.field);
 });
 
 // put in own script
@@ -42,14 +41,14 @@ let scoresheet = {
 		this.moves = [];
 	},
 
-	addMove(piece, field) {
-		this.moves.push({ piece: piece, field: field });
-		console.log(`${piece.getFace()}: ${piece.field.column}${piece.field.row} to ${field.column}${field.row}`);
+	addMove(piece, origin, target) {
+		this.moves.push({ piece: piece, origin: origin, target: target });
+		console.log(`${piece.getFace()}: ${origin.column}${origin.row} to ${target.column}${target.row}`);
 	}
 }
 
 game.et.addEventListener("move", (e) => {
-    scoresheet.addMove(e.detail.piece, e.detail.target);
+    scoresheet.addMove(e.detail.piece, e.detail.origin, e.detail.target);
 });
 
 ui.addEventHandlers();
