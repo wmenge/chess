@@ -1,3 +1,24 @@
+function clearElementsByClassName(className) {
+    var pieceNodes = document.getElementsByClassName(className);
+
+    while (pieceNodes.length > 0) {
+        pieceNodes[0].parentNode.removeChild(pieceNodes[0]);
+    }
+}
+
+function getPieceNode(field) {
+    var pieceNodes = document.getElementById("board").getElementsByClassName(`piece ${field.column} _${field.row}`);
+    return (pieceNodes.length > 0) ? pieceNodes[0] : null;
+}
+
+function addElement(content, className, field) {
+    var node = document.createElement("div");
+    node.className = `${className} ${field.column} _${field.row}`;
+    var textnode = document.createTextNode(content);
+    node.appendChild(textnode);                     
+    document.getElementById("board").appendChild(node);   
+}
+
 var board = {
 
     clear() {
@@ -6,31 +27,22 @@ var board = {
     },
 
     clearPieces() {
-        board.clearElementsByClassName("piece");
+        clearElementsByClassName("piece");
     },
 
     clearIndicators() {
-        board.clearElementsByClassName("indicator");
-    },
-
-    // helper method, private
-    clearElementsByClassName(className) {
-        var pieceNodes = document.getElementsByClassName(className);
-
-        while (pieceNodes.length > 0) {
-            pieceNodes[0].parentNode.removeChild(pieceNodes[0]);
-        }
+        clearElementsByClassName("indicator");
     },
 
     // move dom stuff to piece obj?
     // todo: rename to addpiece
     add(piece, field) {
-        board.addElement(piece, 'piece', field);
+        addElement(piece, 'piece', field);
     },
 
     // take piecenode as input?
     remove(field) {
-        var pieceNode = board.getPieceNode(field);
+        var pieceNode = getPieceNode(field);
 
         if (pieceNode) {
             pieceNode.parentNode.removeChild(pieceNode);
@@ -43,7 +55,7 @@ var board = {
     move(source, target) {
         board.clearIndicators();
 
-        var pieceNode = board.getPieceNode(source);
+        var pieceNode = getPieceNode(source);
         
         if (pieceNode) {
             pieceNode.className = `piece ${target.column} _${target.row}`;
@@ -51,13 +63,8 @@ var board = {
     },
 
     capture(target) {
-        var pieceNode = board.getPieceNode(target);
+        var pieceNode = getPieceNode(target);
         document.getElementById("prison").appendChild(pieceNode);
-    },
-
-    getPieceNode(field) {
-        var pieceNodes = document.getElementById("board").getElementsByClassName(`piece ${field.column} _${field.row}`);
-        return (pieceNodes.length > 0) ? pieceNodes[0] : null;
     },
 
     showValidMoves(moves) {
@@ -69,17 +76,8 @@ var board = {
     },
 
     showIndicator(indicator, field) {
-        board.addElement(indicator, 'indicator valid', field);
-    },
-
-    addElement(content, className, field) {
-        var node = document.createElement("div");
-        node.className = `${className} ${field.column} _${field.row}`;
-        var textnode = document.createTextNode(content);
-        node.appendChild(textnode);                     
-        document.getElementById("board").appendChild(node);   
+        addElement(indicator, 'indicator valid', field);
     }
-
 }
 
 export { board }

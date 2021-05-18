@@ -11,7 +11,7 @@ let ui = {
 
         if (ui.selectedPiece == null) {
             let piece = game.getPieceAt(field);
-            if (piece && game.currentColor && piece.color == game.currentColor) {
+            if (piece && (!game.currentColor || piece.color == game.currentColor)) {
                 ui.selectedPiece = piece;
                 let context = new MoveContext(field, piece, game)
                 board.showValidMoves(piece.validMoves(context));

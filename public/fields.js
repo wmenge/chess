@@ -6,9 +6,7 @@ function compareFields(a, b) {
     }
 }
 
-// move to field.js?
 // correct names are rank/file!
-// create shorthands: a1 = new Field("a", 1)
 // never create fields manually, because we cannot
 // overload == in javascript atm. Always use predefined fields
 // make distinction between relative, absolute fields!

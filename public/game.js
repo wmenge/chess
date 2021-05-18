@@ -76,6 +76,7 @@ let game = {
     clear() {
         this.pieces = new Map();
         this.capturedPieces = [];
+        this.currentColor = null;
         this.et.dispatchEvent(new Event("clear"));
     },
 
@@ -83,7 +84,7 @@ let game = {
         let origin = this.getFieldOf(piece);
 
         // todo: validate capture
-        if (game.getPieceAt(target)) {
+        if (this.getPieceAt(target)) {
             this.capture(target);
         }
 
@@ -100,7 +101,7 @@ let game = {
     },
 
     capture(field) {
-        let capturedPiece = game.getPieceAt(field);
+        let capturedPiece = this.getPieceAt(field);
         this.capturedPieces.push(capturedPiece);
         this.pieces.delete(field);
 
