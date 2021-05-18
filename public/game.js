@@ -1,4 +1,5 @@
-import { fields, Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
+import { fields } from '/fields.js';
+import { Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
 
 // do we ever need multiple games? how?
 let game = {

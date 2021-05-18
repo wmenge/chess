@@ -1,11 +1,13 @@
 import nanotest from '/node_modules/@wmenge/nanotest/index.js';
 
 import { runTests } from '/pieces-tests.js';
+import { runTests as fieldsTests } from '/fields-tests.js';
 import { game } from '/game.js';
 import { board } from '/board.js';
 import { ui } from '/ui.js';
 
 runTests();
+fieldsTests();
 
 // how to call this? and where to put it?
 game.et.addEventListener("clear", () => {

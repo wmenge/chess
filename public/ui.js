@@ -1,8 +1,7 @@
-//import { Field } from '/pieces.js';
-import { fields, PathContext } from '/pieces.js'
-// to to let ui only interact with game
+import { fields } from '/fields.js'
 import { game } from '/game.js';
 import { board } from '/board.js';
+import { MoveContext } from '/pieces.js'
 
 let ui = {
 
@@ -14,13 +13,14 @@ let ui = {
             let piece = game.getPieceAt(field);
             if (piece && game.currentColor && piece.color == game.currentColor) {
                 ui.selectedPiece = piece;
-                let context = new PathContext(field, piece, game)
+                let context = new MoveContext(field, piece, game)
                 board.showValidMoves(piece.validMoves(context));
             }
             return;
         }
 
-        let context = new PathContext(game.getFieldOf(ui.selectedPiece), ui.selectedPiece, game)
+        // Let game build up contex
+        let context = new MoveContext(game.getFieldOf(ui.selectedPiece), ui.selectedPiece, game)
 
         if (ui.selectedPiece.isValidMove(context, field)) {
             // move validattion to game.move!

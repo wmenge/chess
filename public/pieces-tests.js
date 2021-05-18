@@ -1,52 +1,8 @@
 import nanotest from '/node_modules/@wmenge/nanotest/index.js';
 
 import { game } from '/game.js';
-import { fields, Field,  PathContext, Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
-
-/*let relativeToAbsoluteTests = {
-    testMoveUp() {
-        let relativeField = new Field(0, 1);
-        let origin = fields.a5;
-        nanotest.assertEqualsArrays(fields.a6, relativeToAbsolute(relativeField, origin));
-    },
-    testMoveDown() {
-        let relativeField = new Field(0, -1);
-        let origin = fields.a5;
-        nanotest.assertEqualsArrays(fields.a4, relativeToAbsolute(relativeField, origin));
-    },
-    testMoveRight() {
-        let relativeField = new Field(1, 0);
-        let origin = fields.a5;
-        nanotest.assertEqualsArrays(fields.b5, relativeToAbsolute(relativeField, origin));
-    },
-    testMoveLeft() {
-        let relativeField = new Field(-1, 0);
-        let origin = fields.b5;
-        nanotest.assertEqualsArrays(fields.a5, relativeToAbsolute(relativeField, origin));
-    },
-    testMoveOutOfColumnsUpperBound() {
-        let relativeField = new Field(1, 0);
-        let origin = fields.h5;
-        nanotest.assertNull(relativeToAbsolute(relativeField, origin));
-    },
-    testMoveOutOfColumnsLowerBound() {
-        let relativeField = new Field(-1, 0);
-        let origin = fields.a1;
-        nanotest.assertNull(relativeToAbsolute(relativeField, origin));
-    },
-    testMoveOutOfRowsUpperBound() {
-        let relativeField = new Field(0, 1);
-        let origin = fields.a8;
-        nanotest.assertNull(relativeToAbsolute(relativeField, origin));
-    },
-    testMoveOutOfColumnsLowerBound() {
-        let relativeField = new Field(0, -1);
-        let origin = fields.a1;
-        nanotest.assertNull(relativeToAbsolute(relativeField, origin));
-    }
-}
-
-nanotest.run(relativeToAbsoluteTests);*/
+import { fields, Field } from '/fields.js';
+import { Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE, MoveContext } from '/pieces.js';
 
 let pawnTests = {
     testGetFaceWhite() {
@@ -71,42 +27,42 @@ let pawnTests = {
     },*/
     testBlackPawnWithFieldHasValidMoves() {
         let pawn = new Pawn(BLACK);
-        let context = new PathContext(fields.a7);
+        let context = new MoveContext(fields.a7);
         nanotest.assertEqualsArrays([fields.a5, fields.a6], pawn.validMoves(context));
     },
     testWhitePawnWithFieldHasValidMoves() {
         let pawn = new Pawn(WHITE);
-        let context = new PathContext(fields.d2);
+        let context = new MoveContext(fields.d2);
         nanotest.assertEqualsArrays([fields.d3, fields.d4], pawn.validMoves(context));
     },
     testWhitePawnOnInitialPositionHasTwoMoves() {
         let pawn = new Pawn(WHITE);
-        let context = new PathContext(fields.a2);
+        let context = new MoveContext(fields.a2);
         nanotest.assertEqualsArrays([new Field(0, 1), new Field(0, 2)], pawn.validMovesRelative(context));
     },
     testWhitePawnOnNonInitialStateHasOneMove() {
         let pawn = new Pawn(WHITE);
-        let context = new PathContext(fields.a3);
+        let context = new MoveContext(fields.a3);
         nanotest.assertEqualsArrays([new Field(0, 1)], pawn.validMovesRelative(context));
     },
     testBlackPawnOnInitialPositionHasTwoMoves() {
         let pawn = new Pawn(BLACK);
-        let context = new PathContext(fields.a7);
+        let context = new MoveContext(fields.a7);
         nanotest.assertEqualsArrays([new Field(0, -1), new Field(0, -2)], pawn.validMovesRelative(context));
     },
     testBlackPawnOnNonInitialStateHasOneMove() {
         let pawn = new Pawn(BLACK);
-        let context = new PathContext(fields.a6);
+        let context = new MoveContext(fields.a6);
         nanotest.assertEqualsArrays([new Field(0, -1)], pawn.validMovesRelative(context));
     },
     testIsValidMove() {
         let pawn = new Pawn(WHITE);
-        let context = new PathContext(fields.d2);
+        let context = new MoveContext(fields.d2);
         nanotest.assertTrue(pawn.isValidMove(context, fields.d3));
     },
     testIsNotValidMove() {
         let pawn = new Pawn(WHITE);
-        let context = new PathContext(fields.d2);
+        let context = new MoveContext(fields.d2);
         nanotest.assertTrue(!pawn.isValidMove(context, fields.c2));
     },
     testPawnCapturesDiagonal() {
@@ -117,7 +73,7 @@ let pawnTests = {
         game.add(whitePawn, fields.a2);
         game.add(blackPawn, fields.b3);
         
-        let context = new PathContext(fields.a2, whitePawn, game);
+        let context = new MoveContext(fields.a2, whitePawn, game);
 
         // white pawn can capture black pawn
         nanotest.assertTrue(whitePawn.isValidMove(context, fields.b3));
@@ -130,7 +86,7 @@ let pawnTests = {
         game.add(whitePawn, fields.a2);
         game.add(blackPawn, fields.a3);
         
-        let context = new PathContext(fields.a2, whitePawn, game);
+        let context = new MoveContext(fields.a2, whitePawn, game);
 
         // white pawn can not capture black pawn
         nanotest.assertTrue(whitePawn.isValidMove(context, fields.a3));
@@ -187,7 +143,7 @@ let rookTests = {
     testMoves() {
         let rook = new Rook(WHITE);
         let field = fields.a1
-        let context = new PathContext(field);
+        let context = new MoveContext(field);
 
         nanotest.assertEqualsArrays([
             fields.a2,
@@ -216,7 +172,7 @@ let rookTests = {
         game.add(rook, fields.a1);
         game.add(knight, fields.b1);
 
-        let context = new PathContext(fields.a1, rook, game);
+        let context = new MoveContext(fields.a1, rook, game);
 
         // rook cannot move as it is enclosed by a pawn and a knight
         nanotest.assertEqualsArrays([], rook.validMoves(context));
@@ -248,7 +204,7 @@ let knightTests = {
     },
     testMoves() {
         let knight = new Knight(WHITE);
-        let context = new PathContext(fields.b1);
+        let context = new MoveContext(fields.b1);
         nanotest.assertEqualsArrays([
             fields.a3,
             fields.c3,
@@ -306,7 +262,7 @@ let bishopTests = {
     },
     testMoves() {
         let bishop = new Bishop(WHITE);
-        let context = new PathContext(fields.b1);
+        let context = new MoveContext(fields.b1);
         
         nanotest.assertEqualsArrays([
             fields.a2,
@@ -403,7 +359,7 @@ let queenTests = {
     },
     testMoves() {
         let queen = new Queen(WHITE);
-        let context = new PathContext(fields.a1);
+        let context = new MoveContext(fields.a1);
 
         nanotest.assertEqualsArrays([
             fields.a2,
@@ -457,7 +413,7 @@ let kingTests = {
     },
     testMoves() {
         let king = new King(WHITE);
-        let context = new PathContext(fields.b1);
+        let context = new MoveContext(fields.b1);
 
         nanotest.assertEqualsArrays([
             fields.a1,
