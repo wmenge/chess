@@ -4,7 +4,7 @@ import { MoveContext, Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } fr
 // do we ever need multiple games? how?
 let game = {
 
-    pieces: new Map(),
+    pieces: {},
     capturedPieces: [],
     // somehow make current color/having turns optional?
     currentColor: null,
@@ -65,24 +65,24 @@ let game = {
     },
 
     add(piece, field) {
-        this.pieces.set(field, piece);
+        this.pieces[field.toString()] = piece;
         this.et.dispatchEvent(new CustomEvent("add-piece", { detail: { piece: piece, field: field }}));
     },
 
     getPieceAt(field) {
         // Temp hack!
         if (!field) return null;
-        return this.pieces.get(field);
+        return this.pieces[field.toString()];
     },
 
     getFieldOf(piece) {
         if (!piece) return null;
-        let result = Array.from(this.pieces.entries()).find(e => piece === e[1]);
+        let result = Object.keys(this.pieces).find(k => this.pieces[k] == piece);
         if (result) return result[0];
     },
 
     clear() {
-        this.pieces = new Map();
+        this.pieces = {};
         this.capturedPieces = [];
         this.currentColor = null;
         this.et.dispatchEvent(new Event("clear"));
@@ -112,8 +112,8 @@ let game = {
             this.capture(target);
         }
 
-        this.pieces.delete(origin);
-        this.pieces.set(target, piece);
+        delete this.pieces[origin.toString()];
+        this.pieces[target.toString()] = piece;
 
         // move into switch color method. call method as reaction to move event
         if (this.currentColor) {
@@ -134,7 +134,7 @@ let game = {
     capture(field) {
         let capturedPiece = this.getPieceAt(field);
         this.capturedPieces.push(capturedPiece);
-        this.pieces.delete(field);
+        delete this.pieces[field.toString()];
 
         this.et.dispatchEvent(new CustomEvent("capture", { detail: { piece: capturedPiece, target: field }}));
     }
