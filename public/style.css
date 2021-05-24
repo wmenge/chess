@@ -52,10 +52,17 @@ html {
     }
 
     .valid:before {
-       content: "◯";
-       font-size: 2.25rem;
-       font-weight: bold;
-       
+        content: "◯";
+        font-size: 2.25rem;
+        font-weight: bold;
+    }
+
+    .capture:before {
+        content: "◯";
+        font-size: 2.25rem;
+        font-weight: bold;
+        color: red;
+    }
     }
 
     #board .indicator {

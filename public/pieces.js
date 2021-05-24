@@ -30,6 +30,7 @@ function path(x, y, distance, context = null, capture = true) {
 
             // if other piece is different color, then allow capturing
             if (context && capture && occupyingPiece.color != context.piece.color) {
+                step.annotations.capture = true;
                 result.push(step);
             }
             break;
@@ -65,9 +66,11 @@ function diagonalMovesRelative(context = null, distance = 8) {
 function validMoves(context) {
     let relativeMoves = this.validMovesRelative(context);
     
-    return relativeMoves
+    let result = relativeMoves
         .map(e => relativeToAbsolute(e, context.origin))
-        .filter(e => e != null).sort(compareFields);;
+        .filter(e => e != null).sort(compareFields);
+
+    return result;
 }
 
 function isValidMove(context, target) {
@@ -95,18 +98,22 @@ function Pawn(color) {
 
         if (context) {
             // pawns capture diagonal
+            // try to call path function here
             let pathLeft = new Field(-1, direction);
             let pieceLeft = collision(context.game, pathLeft, context.origin);
 
             if (pieceLeft && pieceLeft.color !== this.color) {
+                pathLeft.annotations.capture = true;
                 result.push(pathLeft);
             }
 
             // pawns capture diagonal
+            // try to call path function here
             let pathRight = new Field(1, direction);
             let pieceRight = collision(context.game, pathRight, context.origin);
 
             if (pieceRight && pieceRight.color !== this.color) {
+                pathRight.annotations.capture = true;
                 result.push(pathRight);
             }
         }
@@ -152,6 +159,12 @@ function Knight(color) {
             let targetPiece = context == null ? null : collision(context.game, s, context.origin);
             return !(targetPiece && targetPiece.color == this.color);
         })
+        .map(s => {
+            if (context && collision(context.game, s, context.origin)) {
+                s.annotations.capture = true;
+            }
+            return s;
+        })
         .sort(compareFields);
     }
 }
@@ -177,7 +190,7 @@ function Queen(color) {
     this.validMovesRelativeDiagonal = diagonalMovesRelative;
     
     this.validMovesRelative = function(context = null) {
-        return this.validMovesRelativeStraight(context).concat(this.validMovesRelativeDiagonal(context)).sort(compareFields);;
+        return this.validMovesRelativeStraight(context).concat(this.validMovesRelativeDiagonal(context)).sort(compareFields);
     }
 }
 

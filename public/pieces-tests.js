@@ -387,7 +387,6 @@ let queenTests = {
     },
 }
 
-
 let kingTests = {
     testGetFaceWhite() {
         let king = new King(WHITE);
@@ -425,6 +424,24 @@ let kingTests = {
     },
 }
 
+let captureTests = {
+    testRookCapturesPawn() {
+        let pawn = new Pawn(BLACK);
+        let rook = new Rook(WHITE);
+        let knight = new Knight(WHITE);
+
+        game.clear();
+        game.add(pawn, fields.a2);
+        game.add(rook, fields.a1);
+        game.add(knight, fields.b1);
+
+        let context = new MoveContext(fields.a1, rook, game);
+
+        // rook can capture pawn
+        nanotest.assertEqualsArrays([new Field('a', 2, { capture: true })], rook.validMoves(context));
+    }
+}
+
 function runTests() {
     nanotest.run(pawnTests);
     nanotest.run(rookTests);
@@ -432,6 +449,7 @@ function runTests() {
     nanotest.run(bishopTests);
     nanotest.run(queenTests);
     nanotest.run(kingTests);
+    nanotest.run(captureTests);
 }
 
 export { runTests };

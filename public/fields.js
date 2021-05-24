@@ -10,10 +10,10 @@ function compareFields(a, b) {
 // never create fields manually, because we cannot
 // overload == in javascript atm. Always use predefined fields
 // make distinction between relative, absolute fields!
-function Field(column, row) {
+function Field(column, row, annotations = {}) {
     this.column = column;
     this.row = parseInt(row);
-    this.annotations = {};
+    this.annotations = annotations;
 
     this.equals = function(field) {
         return this.column == field.column && this.row == field.row;
