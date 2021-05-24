@@ -13,13 +13,17 @@ function compareFields(a, b) {
 function Field(column, row) {
     this.column = column;
     this.row = parseInt(row);
+    this.annotations = {};
 
     this.equals = function(field) {
         return this.column == field.column && this.row == field.row;
+    },
+
+    this.toString = function() {
+        return `${this.column}${this.row}`
     }
 }
 
-// this is about fields not pieces
 let columns = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ];
 
 function PredefineFields() {
@@ -35,25 +39,22 @@ function PredefineFields() {
 
 }
 
-// move fields to game?
 let fields = new PredefineFields();
 
-// this is about fields not pieces
-// how to test?
 function relativeToAbsolute(relativeField, origin) {
     let targetColumnIndex = columns.indexOf(origin.column) + relativeField.column;
     let targetRowIndex = origin.row + relativeField.row;
     if (targetColumnIndex < 0 || targetColumnIndex >= columns.length || targetRowIndex < 1 || targetRowIndex > 8) return null;
 
-    return fields[`${columns[targetColumnIndex]}${targetRowIndex}`];
+    let result = new Field(columns[targetColumnIndex], targetRowIndex);
+    result.annotations = relativeField.annotations;
+    return result;
+     //fields[`${columns[targetColumnIndex]}${targetRowIndex}`];
 }
 
-// this is about fields not pieces
-// move to game?
 // refactor out relative to absolute (provide absolute to begin with)
 function collision(game, target, origin) {
     return (game && origin) ? game.getPieceAt(relativeToAbsolute(target, origin)) : false;
 }
-
 
 export { fields, Field, relativeToAbsolute, compareFields, collision }

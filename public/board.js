@@ -76,7 +76,9 @@ var board = {
     },
 
     showIndicator(indicator, field) {
-        addElement(indicator, 'indicator valid', field);
+        let annotations = Object.keys(field.annotations).join(' ');
+        console.log(annotations);
+        addElement(indicator, `indicator valid ${annotations}`, field);
     }
 }
 
