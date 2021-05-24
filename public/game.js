@@ -1,4 +1,5 @@
 import { fields } from '/fields.js';
+import { MoveContext, Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
 
 // do we ever need multiple games? how?
 let game = {
@@ -53,6 +54,14 @@ let game = {
         this.add(new Rook(BLACK), fields.h8);
 
         this.et.dispatchEvent(new CustomEvent("setup", { detail: { game: this }}));
+
+        // allows UI to update with css transitions
+        // when called with await
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve();
+          }, 0);
+        });
     },
 
     add(piece, field) {
@@ -112,6 +121,14 @@ let game = {
         }
 
         this.et.dispatchEvent(new CustomEvent("move", { detail: { origin: origin, piece: piece, target: target, game: this }}));
+
+        // allows UI to update with css transitions
+        // when called with await
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve();
+          }, 300);
+        });
     },
 
     capture(field) {
