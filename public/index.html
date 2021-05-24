@@ -152,6 +152,30 @@
   window.King = King;
   window.BLACK = BLACK;
   window.WHITE = WHITE;
+
+  window.gekkenmat = async function() {
+    // call game methods with await to allow css transitions
+    await game.setup();
+    await game.move(fields.f2, fields.f3);
+    await game.move(fields.e7, fields.e5);
+    await game.move(fields.g2, fields.g4);
+    await game.move(fields.d8, fields.h4);
+  }
+
+  window.herdersmat = async function() {
+    // call game methods with await to allow css transitions
+    await game.setup();
+    await game.move(fields.e2, fields.e4);
+    await game.move(fields.e7, fields.e5);
+    await game.move(fields.f1, fields.c4);
+    await game.move(fields.b8, fields.c6);
+    await game.move(fields.d1, fields.h5);
+    await game.move(fields.g8, fields.f6);
+    await game.move(fields.h5, fields.f7);
+  }
 </script>
+
+<button onclick="gekkenmat()">gekkenmat</button>
+<button onclick="herdersmat()">herdersmat</button>
 
 </html>
