@@ -1,5 +1,4 @@
 import { fields } from '/fields.js';
-import { Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
 
 // do we ever need multiple games? how?
 let game = {
@@ -80,8 +79,24 @@ let game = {
         this.et.dispatchEvent(new Event("clear"));
     },
 
-    move(piece, target) {
-        let origin = this.getFieldOf(piece);
+    hasCurrentTurn(color) {
+        return (!this.currentColor || color == this.currentColor);
+    },
+
+    isValidMove(origin, target) {
+        let piece = this.getPieceAt(origin);
+        let moveContext = new MoveContext(origin, piece, this);
+        return piece.isValidMove(moveContext, target);
+    },
+
+    // todo: validate!
+    move(origin, target) {
+        let piece = this.getPieceAt(origin);
+
+        if (!this.isValidMove(origin, target)) {
+            console.error("Illegal move: %o to %o", origin, target);
+            return false;  
+        } 
 
         // todo: validate capture
         if (this.getPieceAt(target)) {
@@ -96,7 +111,6 @@ let game = {
             this.currentColor = this.currentColor == WHITE ? BLACK : WHITE;
         }
 
-        // todo: validate!
         this.et.dispatchEvent(new CustomEvent("move", { detail: { origin: origin, piece: piece, target: target, game: this }}));
     },
 

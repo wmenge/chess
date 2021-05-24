@@ -1,36 +1,35 @@
+
 import { fields } from '/fields.js'
 import { game } from '/game.js';
 import { board } from '/board.js';
 import { MoveContext } from '/pieces.js'
 
+function getField(event) {
+    let data = event.target.dataset;
+    return fields.getField(data.column, data.row);
+}
+
 let ui = {
 
     onFieldClick(e) {
-        var data = e.target.dataset;
-        var field = fields.getField(data.column, data.row);
+        let field = getField(e);
 
-        if (ui.selectedPiece == null) {
+        if (ui.origin == null) {
+            ui.origin = field;
             let piece = game.getPieceAt(field);
-            if (piece && (!game.currentColor || piece.color == game.currentColor)) {
-                ui.selectedPiece = piece;
-                let context = new MoveContext(field, piece, game)
-                board.showValidMoves(piece.validMoves(context));
-            }
-            return;
-        }
-
-        // Let game build up contex
-        let context = new MoveContext(game.getFieldOf(ui.selectedPiece), ui.selectedPiece, game)
-
-        if (ui.selectedPiece.isValidMove(context, field)) {
-            // move validattion to game.move!
-            game.move(ui.selectedPiece, field);
-            ui.selectedPiece = null;
+            if (piece && game.hasCurrentTurn(piece.color)) {
+                // why do we put piece in context?
+                let moveContext = new MoveContext(field, piece, game);
+                board.showValidMoves(piece.validMoves(moveContext));
+            }   
         } else {
-            ui.selectedPiece = null;
             board.clearIndicators();
-        }
+            if (game.isValidMove(ui.origin, field)) {
+                game.move(ui.origin, field);
+            }
 
+            ui.origin = null;
+        }
     },
 
     addEventHandlers() {
