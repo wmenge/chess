@@ -38,9 +38,17 @@ html {
 
     .field, .piece, .indicator {
         text-align: center;
+        vertical-align: middle;
         width: 3rem;
         height: 3rem;
         box-sizing: border-box;
+    }
+
+    .indicator {
+        border-radius: .5rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        margin: .25rem;
     }
 
     .field {
@@ -51,19 +59,45 @@ html {
         border: .2rem solid black;
     }
 
+    .valid:not(.capture) {
+        /*border: 2px solid black;*/
+    }
+
     .valid:before {
         content: "◯";
         font-size: 2.25rem;
         font-weight: bold;
     }
 
-    .capture:before {
-        content: "◯";
+    /*.valid {
+        background-color: rgba(255, 0, 0, 0.8);
+        mix-blend-mode: multiply;
+    }*/
+
+    /*.capture:before {
+        content: "c";
         font-size: 2.25rem;
         font-weight: bold;
         color: red;
+    }*/
+
+    .capture {
+        background-color: rgba(255, 0, 125, 0.8);
+        mix-blend-mode: multiply;
     }
+
+    /*.attack:after {
+        color: red;
+        content: "a";
+        font-size: 2.25rem;
+        font-weight: bold;
+    }*/
+
+    .attack, .kingsSideCastle, .queenSideCastle {
+        background-color: rgba(125, 0, 255, 0.4);
+        mix-blend-mode: multiply;
     }
+
 
     #board .indicator {
         position: absolute;

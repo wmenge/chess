@@ -13,7 +13,8 @@ function compareFields(a, b) {
 function Field(column, row, annotations = {}) {
     this.column = column;
     this.row = parseInt(row);
-    this.annotations = annotations;
+    this.annotations = annotations; // annotations should belong to a move (origin/target) object
+    // annotations should be a list of strings
 
     this.equals = function(field) {
         return this.column == field.column && this.row == field.row;
@@ -42,7 +43,9 @@ function PredefineFields() {
 let fields = new PredefineFields();
 
 function relativeToAbsolute(relativeField, origin) {
-    let targetColumnIndex = columns.indexOf(origin.column) + relativeField.column;
+    let targetColumnIndex = 
+    columns.indexOf(origin.column) + 
+    relativeField.column;
     let targetRowIndex = origin.row + relativeField.row;
     if (targetColumnIndex < 0 || targetColumnIndex >= columns.length || targetRowIndex < 1 || targetRowIndex > 8) return null;
 

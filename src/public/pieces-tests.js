@@ -2,7 +2,8 @@ import nanotest from '/node_modules/@wmenge/nanotest/index.js';
 
 import { game } from '/game.js';
 import { fields, Field } from '/fields.js';
-import { Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE, MoveContext } from '/pieces.js';
+import { Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
+import { MoveContext, Move } from '/move.js';
 
 let pawnTests = {
     testGetFaceWhite() {
@@ -15,83 +16,46 @@ let pawnTests = {
     },
     testMovesRelativeWhite() {
         let pawn = new Pawn(WHITE);
-        nanotest.assertEqualsArrays([new Field(0, 1)], pawn.validMovesRelative());
+        nanotest.assertEqualsArrays([new Field(0, 1)], pawn.validTargetFieldsRelative());
     },
     testMovesRelativeBlack() {
         let pawn = new Pawn(BLACK);
-        nanotest.assertEqualsArrays([new Field(0, -1)], pawn.validMovesRelative());
+        nanotest.assertEqualsArrays([new Field(0, -1)], pawn.validTargetFieldsRelative());
     },
-    /*testPawnWithoutFieldHasNoValidMoves() {
+    /*testPawnWithoutFieldHasNovalidTargetFields() {
         let pawn = new Pawn(BLACK);
-        nanotest.assertNull(pawn.validMoves());
+        nanotest.assertNull(pawn.validTargetFields());
     },*/
-    testBlackPawnWithFieldHasValidMoves() {
+    testBlackPawnWithFieldHasvalidTargetFields() {
         let pawn = new Pawn(BLACK);
         let context = new MoveContext(fields.a7);
-        nanotest.assertEqualsArrays([fields.a5, fields.a6], pawn.validMoves(context));
+        nanotest.assertEqualsArrays([fields.a5, fields.a6], pawn.validTargetFields(context));
     },
-    testWhitePawnWithFieldHasValidMoves() {
+    testWhitePawnWithFieldHasvalidTargetFields() {
         let pawn = new Pawn(WHITE);
         let context = new MoveContext(fields.d2);
-        nanotest.assertEqualsArrays([fields.d3, fields.d4], pawn.validMoves(context));
+        nanotest.assertEqualsArrays([fields.d3, fields.d4], pawn.validTargetFields(context));
     },
     testWhitePawnOnInitialPositionHasTwoMoves() {
         let pawn = new Pawn(WHITE);
         let context = new MoveContext(fields.a2);
-        nanotest.assertEqualsArrays([new Field(0, 1), new Field(0, 2)], pawn.validMovesRelative(context));
+        nanotest.assertEqualsArrays([new Field(0, 1), new Field(0, 2)], pawn.validTargetFieldsRelative(context));
     },
     testWhitePawnOnNonInitialStateHasOneMove() {
         let pawn = new Pawn(WHITE);
         let context = new MoveContext(fields.a3);
-        nanotest.assertEqualsArrays([new Field(0, 1)], pawn.validMovesRelative(context));
+        nanotest.assertEqualsArrays([new Field(0, 1)], pawn.validTargetFieldsRelative(context));
     },
     testBlackPawnOnInitialPositionHasTwoMoves() {
         let pawn = new Pawn(BLACK);
         let context = new MoveContext(fields.a7);
-        nanotest.assertEqualsArrays([new Field(0, -1), new Field(0, -2)], pawn.validMovesRelative(context));
+        nanotest.assertEqualsArrays([new Field(0, -1), new Field(0, -2)], pawn.validTargetFieldsRelative(context));
     },
     testBlackPawnOnNonInitialStateHasOneMove() {
         let pawn = new Pawn(BLACK);
         let context = new MoveContext(fields.a6);
-        nanotest.assertEqualsArrays([new Field(0, -1)], pawn.validMovesRelative(context));
+        nanotest.assertEqualsArrays([new Field(0, -1)], pawn.validTargetFieldsRelative(context));
     },
-    testIsValidMove() {
-        let pawn = new Pawn(WHITE);
-        let context = new MoveContext(fields.d2);
-        nanotest.assertTrue(pawn.isValidMove(context, fields.d3));
-    },
-    testIsNotValidMove() {
-        let pawn = new Pawn(WHITE);
-        let context = new MoveContext(fields.d2);
-        nanotest.assertTrue(!pawn.isValidMove(context, fields.c2));
-    },
-    testPawnCapturesDiagonal() {
-        let whitePawn = new Pawn(WHITE);
-        let blackPawn = new Rook(BLACK);
-    
-        game.clear();
-        game.add(whitePawn, fields.a2);
-        game.add(blackPawn, fields.b3);
-        
-        let context = new MoveContext(fields.a2, whitePawn, game);
-
-        // white pawn can capture black pawn
-        nanotest.assertTrue(whitePawn.isValidMove(context, fields.b3));
-    },
-    testPawnDoesNotCaptureStraight() {
-        let whitePawn = new Pawn(WHITE);
-        let blackPawn = new Rook(BLACK);
-    
-        game.clear();
-        game.add(whitePawn, fields.a2);
-        game.add(blackPawn, fields.a3);
-        
-        let context = new MoveContext(fields.a2, whitePawn, game);
-
-        // white pawn can not capture black pawn
-        nanotest.assertTrue(whitePawn.isValidMove(context, fields.a3));
-    }
-
 }
 
 let rookTests = {
@@ -138,7 +102,7 @@ let rookTests = {
             new Field(6, 0),
             new Field(7, 0),
             new Field(8, 0)
-            ], rook.validMovesRelative());
+            ], rook.validTargetFieldsRelative());
     },
     testMoves() {
         let rook = new Rook(WHITE);
@@ -160,7 +124,7 @@ let rookTests = {
             fields.f1,
             fields.g1,
             fields.h1
-            ], rook.validMoves(context));
+            ], rook.validTargetFields(context));
     },
     testCollision() {
         let pawn = new Pawn(WHITE);
@@ -175,7 +139,7 @@ let rookTests = {
         let context = new MoveContext(fields.a1, rook, game);
 
         // rook cannot move as it is enclosed by a pawn and a knight
-        nanotest.assertEqualsArrays([], rook.validMoves(context));
+        nanotest.assertEqualsArrays([], rook.validTargetFields(context));
     }
 
 }
@@ -200,7 +164,7 @@ let knightTests = {
             new Field(1, 2),
             new Field(2, -1),
             new Field(2, 1)            
-        ], knight.validMovesRelative());
+        ], knight.validTargetFieldsRelative());
     },
     testMoves() {
         let knight = new Knight(WHITE);
@@ -209,7 +173,7 @@ let knightTests = {
             fields.a3,
             fields.c3,
             fields.d2
-        ], knight.validMoves(context));
+        ], knight.validTargetFields(context));
     },
 }
 
@@ -258,7 +222,7 @@ let bishopTests = {
             new Field(7, 7),
             new Field(8, -8),
             new Field(8, 8)
-            ], bishop.validMovesRelative());
+            ], bishop.validTargetFieldsRelative());
     },
     testMoves() {
         let bishop = new Bishop(WHITE);
@@ -272,7 +236,7 @@ let bishopTests = {
             fields.f5,
             fields.g6,
             fields.h7
-            ], bishop.validMoves(context));
+            ], bishop.validTargetFields(context));
     },
 }
 
@@ -355,7 +319,7 @@ let queenTests = {
             new Field(8, -8),
             new Field(8, 0),
             new Field(8, 8)
-            ], queen.validMovesRelative());
+            ], queen.validTargetFieldsRelative());
     },
     testMoves() {
         let queen = new Queen(WHITE);
@@ -383,7 +347,7 @@ let queenTests = {
             fields.g7,
             fields.h1,
             fields.h8
-            ], queen.validMoves(context));
+            ], queen.validTargetFields(context));
     },
 }
 
@@ -408,7 +372,7 @@ let kingTests = {
             new Field(1, -1),
             new Field(1, 0),
             new Field(1, 1)
-            ], king.validMovesRelative());
+            ], king.validTargetFieldsRelative());
     },
     testMoves() {
         let king = new King(WHITE);
@@ -420,7 +384,179 @@ let kingTests = {
             fields.b2,
             fields.c1,
             fields.c2
-            ], king.validMoves(context));
+            ], king.validTargetFields(context));
+    },
+}
+
+let kingSidecastlingTests = {
+    testCannotPerformKingSideCastlingWithouContext() {
+        let king = new King(WHITE);
+        nanotest.assertTrue(!king.canPerformKingSideCastling());
+    },
+    testCannotPerformWhiteKingSideCastlingWithLimitedContext() {
+        let king = new King(WHITE);
+        let context = new MoveContext(fields.e1);
+        nanotest.assertTrue(!king.canPerformKingSideCastling());
+    },
+    testCannotPerformWhiteKingSideCastlingOnNonInitialPosition() {
+        let king = new King(WHITE);
+        let context = new MoveContext(fields.e2, king);
+        nanotest.assertTrue(!king.canPerformKingSideCastling(context));
+    },
+    testCanPerformWhiteKingSideCastlingContext() {
+        game.clear();
+
+        let king = new King(WHITE);
+        let rook = new Rook(WHITE);
+
+        game.add(rook, fields.h1);
+
+        let context = new MoveContext(fields.e1, king, game);
+        nanotest.assertTrue(king.canPerformKingSideCastling(context));
+    },
+    testCanPerformBlackKingSideCastlingContext() {
+
+        game.clear();
+
+        let king = new King(BLACK);
+        let rook = new Rook(BLACK);
+
+        game.add(rook, fields.a8);
+
+        let context = new MoveContext(fields.d8, king, game);
+        nanotest.assertTrue(king.canPerformKingSideCastling(context));
+    },
+    testWhiteKingMovesIncludesKingSideCastling() {
+        game.clear();
+
+        let king = new King(WHITE);
+        let rook = new Rook(WHITE);
+
+        game.add(king, fields.e1);
+        game.add(rook, fields.h1);
+
+        let context = new MoveContext(fields.e1, king, game);
+
+        nanotest.assertEqualsArrays([
+            new Field(-1, -1),
+            new Field(-1, 0),
+            new Field(-1, 1),
+            new Field(0, -1),
+            new Field(0, 1),        
+            new Field(1, -1),
+            new Field(1, 0),
+            new Field(1, 1),
+            new Field(2, 0, { kingsSideCastle: true })
+            ], king.validTargetFieldsRelative(context));
+    },
+    testBlackKingMovesIncludesKingSideCastling() {
+        game.clear();
+
+        let king = new King(BLACK);
+        let rook = new Rook(BLACK);
+
+        game.add(king, fields.d8);
+        game.add(rook, fields.a8);
+
+        let context = new MoveContext(fields.d8, king, game);
+
+        nanotest.assertEqualsArrays([
+            new Field(-2, 0, { kingsSideCastle: true }),
+            new Field(-1, -1),
+            new Field(-1, 0),
+            new Field(-1, 1),
+            new Field(0, -1),
+            new Field(0, 1),        
+            new Field(1, -1),
+            new Field(1, 0),
+            new Field(1, 1)
+            ], king.validTargetFieldsRelative(context));
+    },
+}
+
+let queenSidecastlingTests = {
+    testCannotPerformQueenSideCastlingWithouContext() {
+        let king = new King(WHITE);
+        nanotest.assertTrue(!king.canPerformQueenSideCastling());
+    },
+    testCannotPerformWhiteQueenSideCastlingWithLimitedContext() {
+        let king = new King(WHITE);
+        let context = new MoveContext(fields.e1);
+        nanotest.assertTrue(!king.canPerformQueenSideCastling());
+    },
+    testCannotPerformWhiteQueenSideCastlingOnNonInitialPosition() {
+        let king = new King(WHITE);
+        let context = new MoveContext(fields.e2, king);
+        nanotest.assertTrue(!king.canPerformQueenSideCastling(context));
+    },
+    testCanPerformWhiteQueenSideCastlingContext() {
+        game.clear();
+
+        let king = new King(WHITE);
+        let rook = new Rook(WHITE);
+
+        game.add(rook, fields.a1);
+
+        let context = new MoveContext(fields.e1, king, game);
+        nanotest.assertTrue(king.canPerformQueenSideCastling(context));
+    },
+    testCanPerformBlackQueenSideCastlingContext() {
+
+        game.clear();
+
+        let king = new King(BLACK);
+        let rook = new Rook(BLACK);
+
+        game.add(rook, fields.h8);
+
+        let context = new MoveContext(fields.d8, king, game);
+        nanotest.assertTrue(king.canPerformQueenSideCastling(context));
+    },
+    testWhiteKingMovesIncludesQueenSideCastling() {
+        game.clear();
+
+        let king = new King(WHITE);
+        let rook = new Rook(WHITE);
+
+        game.add(king, fields.e1);
+        game.add(rook, fields.a1);
+
+        let context = new MoveContext(fields.e1, king, game);
+
+        nanotest.assertEqualsArrays([
+            new Field(-2, 0, { queenSideCastle: true }),
+            new Field(-1, -1),
+            new Field(-1, 0),
+            new Field(-1, 1),
+            new Field(0, -1),
+            new Field(0, 1),        
+            new Field(1, -1),
+            new Field(1, 0),
+            new Field(1, 1),
+            ], king.validTargetFieldsRelative(context));
+    },
+    testBlackKingMovesIncludesQueenSideCastling() {
+        game.clear();
+
+        let king = new King(BLACK);
+        let rook = new Rook(BLACK);
+
+        game.add(king, fields.d8);
+        game.add(rook, fields.h8);
+
+        let context = new MoveContext(fields.d8, king, game);
+
+        nanotest.assertEqualsArrays([
+            new Field(-1, -1),
+            new Field(-1, 0),
+            new Field(-1, 1),
+            new Field(0, -1),
+            new Field(0, 1),        
+            new Field(1, -1),
+            new Field(1, 0),
+            new Field(1, 1),
+            new Field(2, 0, { queenSideCastle: true })
+            ], king.validTargetFieldsRelative(context));
     },
 }
 
@@ -438,7 +574,7 @@ let captureTests = {
         let context = new MoveContext(fields.a1, rook, game);
 
         // rook can capture pawn
-        nanotest.assertEqualsArrays([new Field('a', 2, { capture: true })], rook.validMoves(context));
+        nanotest.assertEqualsArrays([new Field('a', 2, { capture: true })], rook.validTargetFields(context));
     }
 }
 
@@ -449,6 +585,8 @@ function runTests() {
     nanotest.run(bishopTests);
     nanotest.run(queenTests);
     nanotest.run(kingTests);
+    nanotest.run(kingSidecastlingTests);
+    nanotest.run(queenSidecastlingTests);
     nanotest.run(captureTests);
 }
 

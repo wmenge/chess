@@ -1,10 +1,12 @@
-import { fields } from '/fields.js';
-import { MoveContext, Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
+import { fields, relativeToAbsolute } from '/fields.js';
+import { Pawn, Rook, Knight, Bishop, Queen, King, BLACK, WHITE } from '/pieces.js';
+import { MoveContext, Move } from '/move.js';
 
-// do we ever need multiple games? how?
+// do we ever need multiple games? yes we do
 let game = {
 
     pieces: {},
+    moves: [],
     capturedPieces: [],
     // somehow make current color/having turns optional?
     currentColor: null,
@@ -14,8 +16,6 @@ let game = {
     setup() {
 
         this.clear();
-
-        this.currentColor =  WHITE;
 
         this.add(new Pawn(WHITE), fields.a2);
         this.add(new Pawn(WHITE), fields.b2);
@@ -84,7 +84,7 @@ let game = {
     clear() {
         this.pieces = {};
         this.capturedPieces = [];
-        this.currentColor = null;
+        this.currentColor = WHITE;
         this.et.dispatchEvent(new Event("clear"));
     },
 
@@ -92,17 +92,49 @@ let game = {
         return (!this.currentColor || color == this.currentColor);
     },
 
-    isValidMove(origin, target) {
+    // to Move
+
+    /*isValidMove(origin, target) {
         let piece = this.getPieceAt(origin);
         let moveContext = new MoveContext(origin, piece, this);
         return piece.isValidMove(moveContext, target);
+    },*/
+
+    // not a public function! should only be called by move
+    perform(move) {
+
+        if (!move.isValid()) return false;
+
+        delete this.pieces[move.context.origin.toString()];
+        this.pieces[move.target.toString()] = move.context.piece;
+
+
+
+
+
+        /*if (this.game.getPieceAt(this.target)) {
+            this.game.capture(this.target);
+        }
+
+        if (this.currentColor) {
+            this.currentColor = this.currentColor == WHITE ? BLACK : WHITE;
+        }*/
     },
 
-    // todo: validate!
-    move(origin, target) {
-        let piece = this.getPieceAt(origin);
+    toggleTurn() {
+        if (this.currentColor) {
+            this.currentColor = this.currentColor == WHITE ? BLACK : WHITE;
+        }
+    },
 
-        if (!this.isValidMove(origin, target)) {
+    // move logic to Move object?
+    /*move(move) {
+        //let piece = this.getPieceAt(origin);
+
+        //let context = new MoveContext(origin, piece, this);
+        //let move = new Move(target, context);
+
+        if (!move.isValid()) {
             console.error("Illegal move: %o to %o", origin, target);
             return false;  
         } 
@@ -112,14 +144,43 @@ let game = {
             this.capture(target);
         }
 
-        delete this.pieces[origin.toString()];
-        this.pieces[target.toString()] = piece;
-
         // move into switch color method. call method as reaction to move event
         if (this.currentColor) {
             this.currentColor = this.currentColor == WHITE ? BLACK : WHITE;
         }
 
+        // this should be in separeate method of special case move object
+        /*let moveContext = new MoveContext(origin, piece, this);
+        if (piece instanceof King && piece.color == WHITE && piece.canPerformKingSideCastling(moveContext) && target.equals(relativeToAbsolute(piece.kingSideCastleMove(moveContext)[0],origin))) {
+            var rook = this.getPieceAt(fields.h1);
+            delete this.pieces[fields.h1.toString()];
+            this.pieces[fields.f1.toString()] = rook;
+            this.et.dispatchEvent(new CustomEvent("move", { detail: { origin: fields.h1, piece: rook, target: fields.f1, game: this }}));   
+        }
+
+        if (piece instanceof King && piece.color == BLACK && piece.canPerformKingSideCastling(moveContext) && target.equals(relativeToAbsolute(piece.kingSideCastleMove(moveContext)[0],origin))) {
+            var rook = this.getPieceAt(fields.a8);
+            delete this.pieces[fields.a8.toString()];
+            this.pieces[fields.c8.toString()] = rook;
+            this.et.dispatchEvent(new CustomEvent("move", { detail: { origin: fields.a8, piece: rook, target: fields.c8, game: this }}));   
+        }
+
+        if (piece instanceof King && piece.color == WHITE && piece.canPerformQueenSideCastling(moveContext) && target.equals(relativeToAbsolute(piece.queenSideCastleMove(moveContext)[0],origin))) {
+            var rook = this.getPieceAt(fields.a1);
+            delete this.pieces[fields.a1.toString()];
+            this.pieces[fields.d1.toString()] = rook;
+            this.et.dispatchEvent(new CustomEvent("move", { detail: { origin: fields.a1, piece: rook, target: fields.d1, game: this }}));   
+        }
+
+        if (piece instanceof King && piece.color == BLACK && piece.canPerformQueenSideCastling(moveContext) && target.equals(relativeToAbsolute(piece.queenSideCastleMove(moveContext)[0],origin))) {
+            var rook = this.getPieceAt(fields.h8);
+            delete this.pieces[fields.h8.toString()];
+            this.pieces[fields.e8.toString()] = rook;
+            this.et.dispatchEvent(new CustomEvent("move", { detail: { origin: fields.h8, piece: rook, target: fields.e8, game: this }}));   
+        }*/
+
+        /*delete this.pieces[origin.toString()];
+        this.pieces[target.toString()] = piece;
         this.et.dispatchEvent(new CustomEvent("move", { detail: { origin: origin, piece: piece, target: target, game: this }}));
 
         // allows UI to update with css transitions
@@ -127,9 +188,9 @@ let game = {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             resolve();
-          }, 300);
+          }, 500);
         });
-    },
+    },*/
 
     capture(field) {
         let capturedPiece = this.getPieceAt(field);

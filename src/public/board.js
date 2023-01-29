@@ -67,7 +67,7 @@ var board = {
         document.getElementById("prison").appendChild(pieceNode);
     },
 
-    showValidMoves(moves) {
+    showValidTargetFields(moves) {
         board.clearIndicators();
 
         moves.forEach(function(move) {
@@ -76,9 +76,13 @@ var board = {
     },
 
     showIndicator(indicator, field) {
-        let annotations = Object.keys(field.annotations).join(' ');
-        console.log(annotations);
-        addElement(indicator, `indicator valid ${annotations}`, field);
+        //let annotations = Object.keys(field.annotations).join(' ');
+        addElement(indicator, 'indicator valid', field);
+
+        Object.entries(field.annotations).forEach(function(annotation) {
+            console.log(annotation[0]);
+            addElement(indicator, `indicator ${annotation[0]}`, field);
+        });    
     }
 }
 
